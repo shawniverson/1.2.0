@@ -25,6 +25,7 @@ use Sys::Hostname;
 use Storable(qw[freeze thaw]);
 use POSIX;
 use Socket;
+use MailScanner::Config;
 
 # Trace settings - uncomment this to debug
 # DBI->trace(2,'/root/dbitrace.log');
@@ -35,13 +36,6 @@ my($hostname) = hostname;
 my $loop = inet_aton("127.0.0.1");
 my $server_port = 11553;
 my $timeout = 3600;
-
-
-# Modify this as necessary for your configuration
-my($db_name) = 'mailscanner';
-my($db_host) = 'localhost';
-my($db_user) = 'root';
-my($db_pass) = '';
 
  sub InitMailWatchLogging {
    my $pid = fork();
@@ -76,8 +70,13 @@ my($db_pass) = '';
    bind(SERVER, $addr) or exit;
    listen(SERVER, SOMAXCONN) or exit;
 
+   # Get parameters from MailScanner config file
+   my($db_dsn)  = MailScanner::Config::Value('dbdsn');
+   my($db_user) = MailScanner::Config::Value('dbusername');
+   my($db_pass) = MailScanner::Config::Value('dbpassword');
+
    # Our reason for existence - the persistent connection to the database
-   $dbh = DBI->connect("DBI:mysql:database=$db_name;host=$db_host", $db_user, $db_pass, {PrintError => 0, AutoCommit => 1, RaiseError => 1});
+   $dbh = DBI->connect($db_dsn, $db_user, $db_pass, {PrintError => 0, AutoCommit => 1, RaiseError => 1});
    if (!$dbh) {
     MailScanner::Log::WarnLog("Unable to initialise database connection: %s", $DBI::errstr);
    }

@@ -3,6 +3,8 @@
 
  - Enhanced MailScanner.conf parser to catch variable's value even if there is no space before and/or after = sign
  - Added DISPLAY_IP option to show sender's IP Address in Quarantine listings and message lists
+ - Created a MailWatch config file to be put in MailScanner conf.d
+ - Moved database login information for MailWatch.pm, SQLBlackWhiteList.pm and SQLSpamSettings.pm in mailwatch.conf (no more need to edit those files anymore)
 
 1.2.0 - Beta 5
 -----------

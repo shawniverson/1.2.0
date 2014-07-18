@@ -34,12 +34,9 @@ use vars qw($VERSION);
 $VERSION = substr q$Revision: 1.4 $, 10;
 
 use DBI;
+use MailScanner::Config;
 my(%LowSpamScores, %HighSpamScores);
 my(%ScanList);
-my($db_name) = 'mailscanner';
-my($db_host) = 'localhost';
-my($db_user) = 'root';
-my($db_pass) = '';
 
 #
 # Initialise the arrays with the users Spam settings
@@ -110,11 +107,14 @@ sub EndSQLNoScan
 sub CreateScoreList
 {
   my($type, $UserList) = @_;
-
   my($dbh, $sth, $sql, $username, $count);
 
+  # Get parameters from MailScanner config file
+  my($db_dsn)  = MailScanner::Config::Value('dbdsn');
+  my($db_user) = MailScanner::Config::Value('dbusername');
+  my($db_pass) = MailScanner::Config::Value('dbpassword');
   # Connect to the database
-  $dbh = DBI->connect("DBI:mysql:database=$db_name;host=$db_host", $db_user, $db_pass, {PrintError => 0});
+  $dbh = DBI->connect($db_dsn, $db_user, $db_pass, {PrintError => 0});
 
   # Check if connection was successfull - if it isn't
   # then generate a warning and return to MailScanner so it can continue processing.
@@ -146,11 +146,14 @@ sub CreateScoreList
 sub CreateNoScanList
 {
   my($type, $NoScanList) = @_;
-
   my($dbh, $sth, $sql, $username, $count);
 
+  # Get parameters from MailScanner config file
+  my($db_dsn)  = MailScanner::Config::Value('dbdsn');
+  my($db_user) = MailScanner::Config::Value('dbusername');
+  my($db_pass) = MailScanner::Config::Value('dbpassword');
   # Connect to the database
-  $dbh = DBI->connect("DBI:mysql:database=$db_name;host=$db_host", $db_user, $db_pass, {PrintError => 0});
+  $dbh = DBI->connect($db_dsn, $db_user, $db_pass, {PrintError => 0});
 
   # Check if connection was successfull - if it isn't
   # then generate a warning and return to MailScanner so it can continue processing.
