@@ -445,7 +445,7 @@ function printServiceStatus()
     if (!DISTRIBUTED_SETUP) {
         $no = '<span class="yes">&nbsp;' . __('no03') . '&nbsp;</span>' . "\n";
         $yes = '<span class="no">&nbsp;' . __('yes03') . '&nbsp;</span>' . "\n";
-        exec('ps ax | grep MailScanner | grep -v grep', $output);
+        exec('ps --ppid $(cat /var/run/MailScanner.pid)', $output);
         if (count($output) > 0) {
             $running = $yes;
             $procs = count($output) - 1 . ' ' . __('children03');
@@ -457,7 +457,11 @@ function printServiceStatus()
 
         // is MTA running
         $mta = get_conf_var('mta');
-        exec("ps ax | grep $mta | grep -v grep | grep -v php", $output);
+        if ($mta === 'postfix') {
+            exec("ps --ppid $(cat /var/spool/postfix/pid/master.pid)", $output);
+        } else {
+            exec("ps ax | grep $mta | grep -v grep | grep -v php", $output);
+        }
         if (count($output) > 0) {
             $running = $yes;
         } else {
