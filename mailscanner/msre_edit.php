@@ -39,11 +39,13 @@ if ($_SESSION['user_type'] !== 'A') {
 } else {
     if (isset($_POST['token'])) {
         if (false === checkToken($_POST['token'])) {
-            die(__('dietoken99'));
+            header('Location: login.php?error=pagetimeout');
+            die();
         }
     } else {
         if (false === checkToken($_GET['token'])) {
-            die(__('dietoken99'));
+            header('Location: login.php?error=pagetimeout');
+            die();
         }
     }
 
